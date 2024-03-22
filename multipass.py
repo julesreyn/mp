@@ -18,7 +18,7 @@ def list_instances():
     os.system("multipass list")
 
 def stop_instance(name):
-    os.system("multipass stop " + name) 
+    os.system("multipass stop " + name)
 
 def start_instance(name):
     os.system("multipass start " + name)
