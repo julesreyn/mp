@@ -42,7 +42,7 @@ def get_image(name):
     os.system("multipass info " + name + " | grep Image | awk '{print $2}'")
 
 def put_file(name, source, destination):
-    os.system(f"multipass transfer {source} {name}:{destination}")
+    os.system("multipass transfer " + source + " " + name + ":" + destination)
 
 def get_file(name, source, destination):
     os.system(f"multipass transfer {name}:{source} {destination}")
