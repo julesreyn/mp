@@ -46,11 +46,12 @@ def install_prerequisites(name, config_file):
     with open(config_file, 'r') as file:
         for line in file:
             exec_command(name, line.strip())
+    put_file(name, "/home/jules/.cloudflared/cert.pem", "/home/ubuntu/.cloudflared/cert.pem")
 
-def init_instance(image=INSTANCE_IMAGE, cpu=INSTANCE_CPUS, memory=INSTANCE_MEMORY):
+def init_instance(image=INSTANCE_IMAGE, cpu=INSTANCE_CPUS, memory=INSTANCE_MEMORY, config_file="config.init"):
     name = instance_name_gen()
     launch_instance(name, image, cpu, memory)
-    install_prerequisites(name)
+    install_prerequisites(name, config_file)
     return name
 
 
