@@ -11,6 +11,9 @@ import os
 def exec_command(name, command):
     os.system(f"multipass exec {name} -- {command}")
 
+def run_shell(name):
+    os.system(f"multipass shell {name}")
+
 def launch_instance(name="default_name", image="22.04", cpus="1", memory="2G"):
     os.system(f"multipass launch --name {name} --cpus {cpus} --memory {memory} {image}")
 

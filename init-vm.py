@@ -42,16 +42,16 @@ def instance_name_gen():
 #     exec_command(name, "sudo mkdir -p --mode=0755 /usr/share/keyrings; curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null; echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main' | sudo tee /etc/apt/sources.list.d/cloudflared.list; sudo apt-get update -y && sudo apt-get install cloudflared -y")
 #     put_file(name, "/home/jules/.cloudflared/cert.pem", "/home/ubuntu/.cloudflared/cert.pem")
 
-def install_prerequisites(name, config_file):
-    with open(config_file, 'r') as file:
-        for line in file:
-            exec_command(name, line.strip())
-    put_file(name, "/home/jules/.cloudflared/cert.pem", "/home/ubuntu/.cloudflared/cert.pem")
+def install_prerequisites(name):
+    put_file(name, "./config.sh", "/home/ubuntu/config.sh")
+    exec_command(name, "chmod +x /home/ubuntu/config.sh")
+    exec_command(name, "./home/ubuntu/config.sh")
+    exec_command(name, "rm /home/ubuntu/config.sh")
 
-def init_instance(image=INSTANCE_IMAGE, cpu=INSTANCE_CPUS, memory=INSTANCE_MEMORY, config_file="config.init"):
+def init_instance(image=INSTANCE_IMAGE, cpu=INSTANCE_CPUS, memory=INSTANCE_MEMORY):
     name = instance_name_gen()
     launch_instance(name, image, cpu, memory)
-    install_prerequisites(name, config_file)
+    install_prerequisites(name)
     return name
 
 
