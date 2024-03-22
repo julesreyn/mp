@@ -43,10 +43,11 @@ def instance_name_gen():
 #     put_file(name, "/home/jules/.cloudflared/cert.pem", "/home/ubuntu/.cloudflared/cert.pem")
 
 def install_prerequisites(name):
-    put_file(name, "./config.sh", "/home/ubuntu/config.sh")
+    put_file(name, "/home/dsi/mp/config_init.sh", "/home/ubuntu/config.sh")
     exec_command(name, "chmod +x /home/ubuntu/config.sh")
     exec_command(name, "./home/ubuntu/config.sh")
     exec_command(name, "rm /home/ubuntu/config.sh")
+    exec_command(name, "exit")
 
 def init_instance(image=INSTANCE_IMAGE, cpu=INSTANCE_CPUS, memory=INSTANCE_MEMORY):
     name = instance_name_gen()
