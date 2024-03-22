@@ -18,22 +18,22 @@ def list_instances():
     os.system("multipass list")
 
 def stop_instance(name):
-    os.system(f"multipass stop {name}")
+    os.system("multipass stop " + name) 
 
 def start_instance(name):
-    os.system(f"multipass start {name}")
+    os.system("multipass start " + name)
 
 def delete_instance(name):
-    os.system(f"multipass delete " + {name} + " --purge")
+    os.system(f"multipass delete " + name + " --purge")
 
 def delete_all_instances():
     os.system("multipass delete --all --purge")
 
 def get_ip(name):
-    os.system("fmultipass info " + {name} + " | grep IPv4 | awk '{print $2}'")
+    os.system("fmultipass info " + name + " | grep IPv4 | awk '{print $2}'")
 
 def get_state(name):
-    os.system("multipass info " + {name} + " | grep State | awk '{print $2}'")
+    os.system("multipass info " + name + " | grep State | awk '{print $2}'")
 
 def get_image(name):
     os.system("multipass info " + name + " | grep Image | awk '{print $2}'")
