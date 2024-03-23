@@ -22,18 +22,24 @@ def instance_name_gen():
 
 # def update_motd(name):
     # TO-DO
+import subprocess
+
+# def exec_command(name, command):
+#     result = os.system(f"multipass exec {name} -- {command}")
+#     lines = result
+#     for line in lines[:10]:
+#         print(f"> {line}")
 
 def install_prerequisites(name):
-    print("Putting files")
-    put_file(name, "/home/dsi/mp/config.sh", "config.sh")
-    print("Executing chmod")
+    print("[INFO] Uploading config.sh to instance.")
+    put_file(name, "./config.sh", "config.sh")
     exec_command(name, "chmod +x /home/ubuntu/config.sh")
-    print("Executing config.sh")
-    exec_command(name, "./home/ubuntu/config.sh")
-    print("Removing config.sh")
+    print("[INFO] Starting configuration.")
+    exec_command(name, "bash /home/ubuntu/config.sh")
+    print("[INFO] Installation complete, removing config file")
     exec_command(name, "rm /home/ubuntu/config.sh")
+    put_file(name, "~/.cloudflared/cert.pem", "~/.cloudflared/cert.pem")
     print("Done")
-    exec_command(name, "exit")
 
 def init_instance(image=INSTANCE_IMAGE, cpu=INSTANCE_CPUS, memory=INSTANCE_MEMORY):
     name = instance_name_gen()
