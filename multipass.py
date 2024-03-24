@@ -7,6 +7,7 @@
 ##
 
 import os
+import subprocess
 
 def exec_command(name, command):
     os.system(f"multipass exec {name} -- {command}")
@@ -74,3 +75,5 @@ def get_nb_users(name):
 def get_hostname(name):
     os.system("multipass exec " + name + " -- hostname")
 
+def get_running_instances():
+    os.system("multipass list | grep Running | awk '{print $1}'")

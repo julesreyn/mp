@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Conseil Junior Taker - 2024
 # mp [Ubuntu::22.04]
@@ -6,7 +5,6 @@
 # Virtual machine configuration script
 # @julesreyn
 #
-
 
 echo -e "\n\n[+] Initializing configuration of instance\n\n"
 
@@ -41,8 +39,22 @@ echo -e "\n\n[+] Installing cloudflare service\n\n"
 
 sudo mkdir -p --mode=0755 /usr/share/keyrings
 curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
-echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+echo "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflared.list
 sudo apt-get update -y && sudo apt-get install cloudflared -y
 mkdir -p ~/.cloudflared
 
 echo -e "\n\n[+] Finished configuration of instance\n\n"
+
+deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main
+Hit:1 http://security.ubuntu.com/ubuntu jammy-security InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu jammy InRelease
+Ign:3 https://pkg.cloudflare.com/cloudflared $(lsb_release InRelease
+Hit:4 https://download.docker.com/linux/ubuntu jammy InRelease
+Hit:5 http://archive.ubuntu.com/ubuntu jammy-updates InRelease
+Err:6 hjuy-htbfttps://pkg.cloudflare.com/cloudflared $(lsb_release Release
+  404  Not Found [IP: 104.18.0.118 443]
+Hit:7 http://archive.ubuntu.com/ubuntu jammy-backports InRelease
+Reading package lists... Done
+E: The repository 'https://pkg.cloudflare.com/cloudflared $(lsb_release Release' does not have a Release file.
+N: Updating from such a repository can't be done securely, and is therefore disabled by default.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
