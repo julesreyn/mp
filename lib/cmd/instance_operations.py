@@ -2,17 +2,9 @@
 ## Conseil Junior Taker - 2024
 ## mp [Ubuntu]
 ## File description:
-## multipass library
+## taker instance library for taker instance operations
 ## @julesreyn
 ##
-
-import subprocess
-from lib.taker_logger import logger
-import os
-import secrets
-import string
-
-
 
 def instance_name_gen():
     """
@@ -188,8 +180,3 @@ def list_instances():
     if result.returncode != 0:
         logger(instance="List Instances", error=result.stderr)
     return [line.split()[0] for line in result.stdout.split('\n')[2:] if line]
-
-
-
-
-

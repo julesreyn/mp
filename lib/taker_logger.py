@@ -1,6 +1,6 @@
 ##
 ## Conseil Junior Taker - 2024
-## mp [Ubuntu]
+## mp [Ubuntu:22.04]
 ## File description:
 ## send logs to SysAdmin
 ## @julesreyn
@@ -52,5 +52,3 @@ def logger(description=desc_exemple, status="error", instance="N/A", error=error
 
     if response.status_code != 204:
         raise ValueError(f'Request to Discord returned an error {response.status_code}, the response is:\n{response.text}')
-
-
