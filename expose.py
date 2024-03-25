@@ -1,21 +1,21 @@
 import argparse
 import json
-import os
 import subprocess
 import socket
 import re
-import socket
+from pathlib import Path
 import yaml
 import psutil
 
-
 STATUS_FILE = 'port_status'
-HOME_DIR = os.path.expanduser('~')
+HOME_DIR = Path.home()
+CLOUDFLARED_DIR = HOME_DIR / '.cloudflared'
 DOMAIN_URL = 'skead.fr'
 
 def load_status():
-    if os.path.exists(STATUS_FILE):
-        with open(STATUS_FILE, 'r') as f:
+    status_file = Path(STATUS_FILE)
+    if status_file.exists():
+        with status_file.open() as f:
             try:
                 return json.load(f)
             except json.JSONDecodeError:
@@ -37,7 +37,7 @@ def start(port):
     print(f'Creating tunnel {tunnel_name}...')
     result = subprocess.run(['cloudflared', 'tunnel', 'create', tunnel_name], capture_output=True, text=True, check=True)
 
-    match = re.search(rf'{HOME_DIR}/.cloudflared/([a-f0-9-]+\.json)', result.stdout)
+    match = re.search(rf'{CLOUDFLARED_DIR}/([a-f0-9-]+\.json)', result.stdout)
     if match:
         json_file_name = match.group(1)
     else:
@@ -50,14 +50,14 @@ def start(port):
     config = {
         'url': f'http://localhost:{port}',
         'tunnel': tunnel_name,
-        'credentials-file': f'{HOME_DIR}/.cloudflared/{json_file_name}'
+        'credentials-file': str(CLOUDFLARED_DIR / json_file_name)
     }
-    with open(f'{HOME_DIR}/.cloudflared/{tunnel_name}.yml', 'w') as f:
+    with (CLOUDFLARED_DIR / f'{tunnel_name}.yml').open('w') as f:
         yaml.dump(config, f)
 
     subprocess.run(['cloudflared', 'tunnel', 'route', 'dns', tunnel_name, f'{tunnel_name}.{DOMAIN_URL}'], check=True)
 
-    subprocess.Popen(['cloudflared', 'tunnel', '--config', f'{HOME_DIR}/.cloudflared/{tunnel_name}.yml', 'run', tunnel_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.Popen(['cloudflared', 'tunnel', '--config', str(CLOUDFLARED_DIR / f'{tunnel_name}.yml'), 'run', tunnel_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("\033[92m[OK]\033[0m")
 
 def stop(port):
@@ -74,7 +74,6 @@ def stop(port):
     status[port] = 'stopped'
     save_status(status)
     print("\033[92m[OK]\033[0m")
-
 
 def list_services():
     print('Listing all services...')
@@ -98,11 +97,11 @@ def delete(port):
             proc.terminate()
             break
 
-    config_file = f'{HOME_DIR}/.cloudflared/{tunnel_name}.yml'
-    if os.path.exists(config_file):
-        os.remove(config_file)
+    config_file = CLOUDFLARED_DIR / f'{tunnel_name}.yml'
+    if config_file.exists():
+        config_file.unlink()
     subprocess.run(['cloudflared', 'tunnel', 'cleanup', tunnel_name], check=True)
-    subprocess.run(['cloudflared', 'tunnel', 'route', 'delete', f'{tunnel_name}.skead.fr'], check=True)
+    subprocess.run(['cloudflared', 'tunnel', 'route', 'delete', f'{tunnel_name}.{DOMAIN_URL}'], check=True)
     subprocess.run(['cloudflared', 'tunnel', 'delete', tunnel_name], check=True)
 
     status = load_status()
