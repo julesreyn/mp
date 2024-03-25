@@ -7,3 +7,5 @@ port_status.pkl
 key.txt
 test.py
 __pycache__/multipass.cpython-310.yc
+
+.env
