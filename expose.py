@@ -10,6 +10,8 @@ import psutil
 
 
 STATUS_FILE = 'port_status'
+HOME_DIR = os.path.expanduser('~')
+DOMAIN_URL = 'skead.fr'
 
 def load_status():
     if os.path.exists(STATUS_FILE):
@@ -35,7 +37,7 @@ def start(port):
     print(f'Creating tunnel {tunnel_name}...')
     result = subprocess.run(['cloudflared', 'tunnel', 'create', tunnel_name], capture_output=True, text=True, check=True)
 
-    match = re.search(r'/home/jules/.cloudflared/([a-f0-9-]+\.json)', result.stdout)
+    match = re.search(rf'{HOME_DIR}/.cloudflared/([a-f0-9-]+\.json)', result.stdout)
     if match:
         json_file_name = match.group(1)
     else:
@@ -48,22 +50,18 @@ def start(port):
     config = {
         'url': f'http://localhost:{port}',
         'tunnel': tunnel_name,
-        'credentials-file': f'/home/jules/.cloudflared/{json_file_name}'
+        'credentials-file': f'{HOME_DIR}/.cloudflared/{json_file_name}'
     }
-    with open(f'/home/jules/.cloudflared/{tunnel_name}.yml', 'w') as f:
+    with open(f'{HOME_DIR}/.cloudflared/{tunnel_name}.yml', 'w') as f:
         yaml.dump(config, f)
 
-    subprocess.run(['cloudflared', 'tunnel', 'route', 'dns', tunnel_name, f'{tunnel_name}.skead.fr'], check=True)
+    subprocess.run(['cloudflared', 'tunnel', 'route', 'dns', tunnel_name, f'{tunnel_name}.{DOMAIN_URL}'], check=True)
 
-    subprocess.Popen(['cloudflared', 'tunnel', '--config', f'/home/jules/.cloudflared/{tunnel_name}.yml', 'run', tunnel_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.Popen(['cloudflared', 'tunnel', '--config', f'{HOME_DIR}/.cloudflared/{tunnel_name}.yml', 'run', tunnel_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("\033[92m[OK]\033[0m")
 
 def stop(port):
     print(f'Stopping service on port {port}...', end=' ')
-    status = load_status()
-    if status.get(port) != 'started':
-        print('Service is not running.')
-        return
 
     tunnel_name = f'{socket.gethostname()}-{port}'
 
@@ -71,13 +69,12 @@ def stop(port):
         if 'cloudflared' in proc.info['name'] and tunnel_name in proc.info['cmdline']:
             proc.terminate()
             break
-    else:
-        print('Could not find running tunnel.')
-        return
 
+    status = load_status()
     status[port] = 'stopped'
     save_status(status)
     print("\033[92m[OK]\033[0m")
+
 
 def list_services():
     print('Listing all services...')
@@ -94,16 +91,17 @@ def delete(port):
     print(f'Deleting service on port {port}...', end=' ')
 
     tunnel_name = f'{socket.gethostname()}-{port}'
+    stop(port)
 
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
         if 'cloudflared' in proc.info['name'] and tunnel_name in proc.info['cmdline']:
             proc.terminate()
             break
 
-    config_file = f'/home/jules/.cloudflared/{tunnel_name}.yml'
+    config_file = f'{HOME_DIR}/.cloudflared/{tunnel_name}.yml'
     if os.path.exists(config_file):
         os.remove(config_file)
-    subprocess.run(['cloudflared', 'tunnel', 'cleanup', {tunnel_name}], check=True)
+    subprocess.run(['cloudflared', 'tunnel', 'cleanup', tunnel_name], check=True)
     subprocess.run(['cloudflared', 'tunnel', 'route', 'delete', f'{tunnel_name}.skead.fr'], check=True)
     subprocess.run(['cloudflared', 'tunnel', 'delete', tunnel_name], check=True)
 
