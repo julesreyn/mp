@@ -1,3 +1,11 @@
+##
+## Conseil Junior Taker - 2024
+## mp [Ubuntu:22.04]
+## File description:
+## taker expose command to expose services and ports
+## @julesreyn
+##
+
 import argparse
 import json
 import subprocess
@@ -73,16 +81,13 @@ def start(port):
     10. Runs a command to start the tunnel.
     11. Prints a message indicating that the service has started.
     """
-
     print(f'Starting service on port {port}...', end=' ')
     status = load_status()
     status[port] = 'started'
     save_status(status)
-
     tunnel_name = f'{socket.gethostname()}-{port}'
     print(f'Creating tunnel {tunnel_name}...')
     result = subprocess.run(['cloudflared', 'tunnel', 'create', tunnel_name], capture_output=True, text=True, check=True)
-
     match = re.search(rf'{CLOUDFLARED_DIR}/([a-f0-9-]+\.json)', result.stdout)
     if match:
         json_file_name = match.group(1)
@@ -92,7 +97,6 @@ def start(port):
 
     hostname = socket.gethostname()
     tunnel_name = f'{hostname}_{port}'
-
     config = {
         'url': f'http://localhost:{port}',
         'tunnel': tunnel_name,
@@ -102,7 +106,6 @@ def start(port):
         yaml.dump(config, f)
 
     subprocess.run(['cloudflared', 'tunnel', 'route', 'dns', tunnel_name, f'{tunnel_name}.{DOMAIN_URL}'], check=True)
-
     subprocess.Popen(['cloudflared', 'tunnel', '--config', str(CLOUDFLARED_DIR / f'{tunnel_name}.yml'), 'run', tunnel_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("\033[92m[OK]\033[0m")
 
@@ -124,11 +127,8 @@ def stop(port):
     6. Terminates the process if found.
     7. Prints a message indicating that the service has stopped.
     """
-
     print(f'Stopping service on port {port}...', end=' ')
-
     tunnel_name = f'{socket.gethostname()}-{port}'
-
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
         if 'cloudflared' in proc.info['name'] and tunnel_name in proc.info['cmdline']:
             proc.terminate()
@@ -150,7 +150,6 @@ def list_services():
     2. Loads the current status of all services.
     3. Prints the status of each service.
     """
-
     print('Listing all services...')
     status = load_status()
     for port, state in status.items():
@@ -170,7 +169,6 @@ def restart(port):
     2. Stops the service on the specified port.
     3. Starts the service on the specified port.
     """
-
     print(f'Restarting service on port {port}...')
     stop(port)
     start(port)
@@ -195,12 +193,9 @@ def delete(port):
     8. Runs a command to delete the tunnel.
     9. Prints a message indicating that the service has been deleted.
     """
-
     print(f'Deleting service on port {port}...', end=' ')
-
     tunnel_name = f'{socket.gethostname()}-{port}'
     stop(port)
-
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
         if 'cloudflared' in proc.info['name'] and tunnel_name in proc.info['cmdline']:
             proc.terminate()
@@ -223,47 +218,28 @@ def delete(port):
 def main():
     """
     Parse command-line arguments and execute the corresponding command.
-
-    This function parses the command-line arguments using the 'argparse' module and executes the corresponding command.
-    The available commands are :
-
-    - start: Start a service on a specified port.
-    - stop: Stop a service on a specified port.
-    - list: List all services and their statuses.
-    - restart: Restart a service on a specified port.
-
-    Each command takes a port number as an argument.
     """
-
     parser = argparse.ArgumentParser(description='Manage services.')
     subparsers = parser.add_subparsers(dest='command')
+    commands = ['start', 'stop', 'list', 'restart', 'delete']
+    parsers = {command: subparsers.add_parser(command) for command in commands}
 
-    start_parser = subparsers.add_parser('start')
-    start_parser.add_argument('port', type=int)
-
-    stop_parser = subparsers.add_parser('stop')
-    stop_parser.add_argument('port', type=int)
-
-    list_parser = subparsers.add_parser('list')
-
-    restart_parser = subparsers.add_parser('restart')
-    restart_parser.add_argument('port', type=int)
-
-    delete_parser = subparsers.add_parser('delete')
-    delete_parser.add_argument('port', type=int)
+    for command in ['start', 'stop', 'restart', 'delete']:
+        parsers[command].add_argument('port', type=int)
 
     args = parser.parse_args()
+    command_to_function = {
+        'start': start,
+        'stop': stop,
+        'list': list_services,
+        'restart': restart,
+        'delete': delete
+    }
 
-    if args.command == 'start':
-        start(args.port)
-    elif args.command == 'stop':
-        stop(args.port)
+    if args.command in ['start', 'stop', 'restart', 'delete']:
+        command_to_function[args.command](args.port)
     elif args.command == 'list':
-        list_services()
-    elif args.command == 'restart':
-        restart(args.port)
-    elif args.command == 'delete':
-        delete(args.port)
+        command_to_function[args.command]()
 
 if __name__ == '__main__':
     main()
