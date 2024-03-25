@@ -7,10 +7,14 @@ from pathlib import Path
 import yaml
 import psutil
 
+
+
 STATUS_FILE = 'port_status'
 HOME_DIR = Path.home()
 CLOUDFLARED_DIR = HOME_DIR / '.cloudflared'
 DOMAIN_URL = 'skead.fr'
+
+
 
 def load_status():
     status_file = Path(STATUS_FILE)
@@ -23,9 +27,13 @@ def load_status():
     else:
         return {}
 
+
+
 def save_status(status):
     with open(STATUS_FILE, 'w') as f:
         json.dump(status, f)
+
+
 
 def start(port):
     print(f'Starting service on port {port}...', end=' ')
@@ -60,6 +68,8 @@ def start(port):
     subprocess.Popen(['cloudflared', 'tunnel', '--config', str(CLOUDFLARED_DIR / f'{tunnel_name}.yml'), 'run', tunnel_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print("\033[92m[OK]\033[0m")
 
+
+
 def stop(port):
     print(f'Stopping service on port {port}...', end=' ')
 
@@ -75,16 +85,22 @@ def stop(port):
     save_status(status)
     print("\033[92m[OK]\033[0m")
 
+
+
 def list_services():
     print('Listing all services...')
     status = load_status()
     for port, state in status.items():
         print(f'Service on port {port} is {state}')
 
+
+
 def restart(port):
     print(f'Restarting service on port {port}...')
     stop(port)
     start(port)
+
+
 
 def delete(port):
     print(f'Deleting service on port {port}...', end=' ')
@@ -108,6 +124,8 @@ def delete(port):
     status[port] = 'deleted'
     save_status(status)
     print("\033[92m[OK]\033[0m")
+
+
 
 def main():
     parser = argparse.ArgumentParser(description='Manage services.')
