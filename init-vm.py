@@ -7,15 +7,11 @@
 ##
 
 from multipass import *
-import secrets
-import string
+
 
 INSTANCE_IMAGE = "22.04"
 INSTANCE_CPUS = "1"
 INSTANCE_MEMORY = "2G"
-
-def instance_name_gen():
-    return ''.join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(6))
 
 # def init_cloudflare_service():
     #TO-DO
