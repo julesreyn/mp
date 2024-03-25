@@ -6,6 +6,11 @@
 ## @julesreyn
 ##
 
+from lib.taker_logger import logger
+import subprocess
+import secrets
+import string
+
 def instance_name_gen():
     """
     Generate a random name for a new instance.
