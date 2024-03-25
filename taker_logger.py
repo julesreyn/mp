@@ -1,8 +1,16 @@
+##
+## Conseil Junior Taker - 2024
+## mp [Ubuntu]
+## File description:
+## send logs to SysAdmin
+## @julesreyn
+##
+
 import requests
 import json
 from datetime import datetime
 
-def send_to_discord(webhook_url, title, description, status, instance, error=None):
+def logger(webhook_url, title, description, status, instance, error=None):
     """
     Send a message to a Discord channel via a webhook.
 
