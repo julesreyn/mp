@@ -1,6 +1,6 @@
 ##
 ## Conseil Junior Taker - 2024
-## mp [Ubuntu]
+## mp [Ubuntu:22.04]
 ## File description:
 ## taker instance library for taker instance information
 ## @julesreyn

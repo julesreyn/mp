@@ -1,6 +1,6 @@
 ##
 ## Conseil Junior Taker - 2024
-## mp [Ubuntu]
+## mp [Ubuntu:22.04]
 ## File description:
 ## taker instance library for taker instance operations
 ## @julesreyn
@@ -10,6 +10,8 @@ from lib.taker_logger import logger
 import subprocess
 import secrets
 import string
+
+
 
 def instance_name_gen():
     """
@@ -185,3 +187,39 @@ def list_instances():
     if result.returncode != 0:
         logger(instance="List Instances", error=result.stderr)
     return [line.split()[0] for line in result.stdout.split('\n')[2:] if line]
+
+
+
+def stop_all_instances():
+    """
+    Stop all instances.
+
+    Returns:
+        bool: True if all instances were stopped successfully, False otherwise.
+
+    Example:
+        >>> stop_all_instances()
+        True
+    """
+    instances = list_instances()
+    for instance in instances:
+        stop_instance(instance)
+    return True
+
+
+
+def start_all_instances():
+    """
+    Start all instances.
+
+    Returns:
+        bool: True if all instances were started successfully, False otherwise.
+
+    Example:
+        >>> start_all_instances()
+        True
+    """
+    instances = list_instances()
+    for instance in instances:
+        start_instance(instance)
+    return True

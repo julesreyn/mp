@@ -2,7 +2,7 @@
 ## Conseil Junior Taker - 2024
 ## mp [Ubuntu:22.04]
 ## File description:
-## send logs to SysAdmin
+## taker instance library for taker logging operations
 ## @julesreyn
 ##
 
@@ -12,10 +12,11 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 
-load_dotenv()
 
+load_dotenv()
 desc_exemple = "An error occurred on a taker instance.\n Please check the logs for more information. \n\nFor more advanced information, check the error message below :\n"
 error_exemple = "No error given. Please check the logs for more information."
+
 
 def logger(description=desc_exemple, status="error", instance="N/A", error=error_exemple):
     """
@@ -28,7 +29,6 @@ def logger(description=desc_exemple, status="error", instance="N/A", error=error
         status (str): The status of the message, can be 'error', 'warning', or 'info'.
         error (str): The error message to display in a code block.
     """
-
     color = {
         'error': 16711680,  # Red
         'warning': 16776960,  # Yellow
@@ -36,18 +36,19 @@ def logger(description=desc_exemple, status="error", instance="N/A", error=error
     }.get(status, 8421504)
 
     if error:
-        description += "\n```" + error + "```"
+        description += f"\n```{error}```"
 
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     description += f'\nError occurred at **{current_time}** UTC on instance **{instance}**'
 
     data = {
         "embeds": [{
-            "title": error + " - " + instance,
+            "title": f"{error} - {instance}",
             "description": description,
             "color": color
         }]
     }
+
     response = requests.post(os.getenv('WEBHOOK_URL'), data=json.dumps(data), headers={"Content-Type": "application/json"})
 
     if response.status_code != 204:
