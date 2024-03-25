@@ -6,7 +6,7 @@
 ## @julesreyn
 ##
 
-from multipass import *
+from lib.multipass import *
 
 
 INSTANCE_IMAGE = "22.04"
@@ -28,7 +28,7 @@ import subprocess
 
 def install_prerequisites(name):
     print("[INFO] Uploading config.sh to instance.")
-    put_file(name, "./config.sh", "config.sh")
+    put_file(name, "./setup_tools/config.sh", "config.sh")
     exec_command(name, "chmod +x /home/ubuntu/config.sh")
     print("[INFO] Starting configuration.")
     exec_command(name, "bash /home/ubuntu/config.sh")

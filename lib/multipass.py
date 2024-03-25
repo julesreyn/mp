@@ -7,7 +7,7 @@
 ##
 
 import subprocess
-from taker_logger import logger
+from lib.taker_logger import logger
 import secrets
 import string
 
