@@ -21,6 +21,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 printf "\n"
-printf " * Documentation:  https://help.ubuntu.com\n"
-printf " * Management:     https://landscape.canonical.com\n"
-printf " * Support:        https://ubuntu.com/pro\n"
+printf " * Bug report:          https://report.juniortaker.com\n"
+printf " * Support:             Feel free to ask for help on the Taker discord.\n"
+printf " * System status:       https://status.juniortaker.com\n"
+printf " * Sysadmin contact:    dsi@juniortaker.com\n"

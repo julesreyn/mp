@@ -29,13 +29,15 @@ import subprocess
 def install_prerequisites(name):
     print("[INFO] Uploading config.sh to instance.")
     put_file(name, "./setup_tools/config.sh", "config.sh")
-    exec_command(name, "chmod +x /home/ubuntu/config.sh")
+    put_file(name, "./setup_tools/update-motd.d/00-header", "00-header")
+    put_file(name, "./setup_tools/update-motd.d/10-help-text", "10-help-text")
+    # exec_command(name, "chmod +x /home/ubuntu/config.sh")
     print("[INFO] Starting configuration.")
     exec_command(name, "bash /home/ubuntu/config.sh")
     print("[INFO] Installation complete, removing config file")
     exec_command(name, "rm /home/ubuntu/config.sh")
     put_file(name, "~/.cloudflared/cert.pem", "~/.cloudflared/cert.pem")
-    print("Done")
+    print("[INFO] Done.")
 
 def init_instance(image=INSTANCE_IMAGE, cpu=INSTANCE_CPUS, memory=INSTANCE_MEMORY):
     name = instance_name_gen()

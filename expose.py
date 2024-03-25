@@ -26,7 +26,6 @@ def load_status():
     This function loads the status of all services from a file named 'port_status' in the current directory.
     If the file does not exist, an empty dictionary is returned.
     """
-
     status_file = Path(STATUS_FILE)
     if status_file.exists():
         with status_file.open() as f:

@@ -8,6 +8,7 @@
 
 import subprocess
 from lib.taker_logger import logger
+import os
 import secrets
 import string
 
@@ -22,9 +23,9 @@ def instance_name_gen():
 
     Example:
         >>> instance_name_gen()
-        'xzv3a4'
+        'xzvyan'
     """
-    return ''.join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(6))
+    return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(6))
 
 
 
@@ -45,10 +46,11 @@ def exec_command(name, command):
         >>> exec_command("instance_name", "ls /nonexistent")
         False
     """
-    result = subprocess.run(["multipass", "exec", name, "--", command], capture_output=True, text=True)
-    if result.returncode != 0:
-        logger(instance=name, error=result.stderr)
-    return result.returncode == 0
+    command_list = command.split()
+    process = subprocess.run(["multipass", "exec", name, "--"] + command_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if process.returncode != 0:
+        logger(instance=name, error=process.stderr)
+    return process.returncode == 0
 
 
 
@@ -83,7 +85,7 @@ def launch_instance(name="default_name", image="22.04", cpus="1", memory="2G"):
         >>> launch_instance("instance_name", "22.04", "1", "2G")
         True
     """
-    result = subprocess.run(["multipass", "launch", "--name", name, "--cpus", cpus, "--memory", memory, image], capture_output=True, text=True)
+    result = subprocess.run(["multipass", "launch", "--name", name, "--cpus", cpus, "--memory", memory, image], text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     return result.returncode == 0
@@ -265,7 +267,11 @@ def put_file(name, source, destination):
         >>> put_file("nonexistent_instance", "file.txt", "/home/ubuntu/file.txt")
         False
     """
-    result = subprocess.run(["multipass", "transfer", source, f"{name}:{destination}"], capture_output=True, text=True)
+    if not os.path.exists(source):
+        logger(instance=name, error=f"warning: source file {source} does not exist.", status="warning")
+        print(f"Source file {source} does not exist.")
+        return False
+    result = subprocess.run(["multipass", "transfer", source, f"{name}:{destination}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     return result.returncode == 0

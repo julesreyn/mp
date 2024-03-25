@@ -14,7 +14,7 @@ from datetime import datetime
 
 load_dotenv()
 
-desc_exemple = "An error occurred in a taker instance.\n Please check the logs for more information. \n\nFor more advanced information, check the error message below :\n"
+desc_exemple = "An error occurred on a taker instance.\n Please check the logs for more information. \n\nFor more advanced information, check the error message below :\n"
 error_exemple = "No error given. Please check the logs for more information."
 
 def logger(description=desc_exemple, status="error", instance="N/A", error=error_exemple):
