@@ -9,7 +9,9 @@
 from taker_lib.cmd.instance_operations import instance_name_gen, exec_command
 from taker_lib.cmd.instance_operations import launch_instance
 from taker_lib.cmd.file_operations import put_file
-import	logging
+import subprocess
+import socket
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -72,8 +74,7 @@ def init_instance(image=DEFAULT_INSTANCE_IMAGE, cpu=DEFAULT_INSTANCE_VCPUS, memo
         image (str): The image of the instance, default is "22.04"
         cpu (str): The number of CPUs, default is "1"
         memory (str): The amount of memory, default is "2G"
-        config (bool): Whether to configure the instance after launching, default is True
-
+        config (bool): Configures the instance with Taker requirements, default is True
     Returns:
         str: The name of the instance
 
@@ -87,3 +88,30 @@ def init_instance(image=DEFAULT_INSTANCE_IMAGE, cpu=DEFAULT_INSTANCE_VCPUS, memo
         log.info(f'Configuring instance {name} with Taker requirements')
         install_prerequisites(name)
     return name
+
+
+def check_server_virtualization():
+    """
+    Check if the server supports virtualization, has Multipass installed, and has network access
+
+    Returns:
+        bool: True if the server meets all requirements, False otherwise
+
+    Example:
+        >>> check_server_virtualization()
+            True
+    """
+    log.info('Checking if the server meets all requirements')
+    try:
+        subprocess.run(["multipass", "--version"], check=True)
+    except subprocess.CalledProcessError:
+        log.error('Multipass is not installed')
+        return False
+
+    try:
+        socket.create_connection(("www.google.com", 80))
+    except OSError:
+        log.error('No network access')
+        return False
+
+    return True
