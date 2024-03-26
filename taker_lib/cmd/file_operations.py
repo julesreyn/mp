@@ -6,9 +6,12 @@
 ## @julesreyn
 ##
 
-from lib.taker_logger import logger
+from taker_lib.logger import logger
 import subprocess
 import os
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def put_file(name, source, destination):
@@ -36,13 +39,14 @@ def put_file(name, source, destination):
         >>> put_file("nonexistent_instance", "file.txt", "/home/ubuntu/file.txt")
         False
     """
+    log.info(f'Transferring file to instance {name}: {source} -> {destination}')
     if not os.path.exists(source):
         logger(instance=name, error=f"warning: source file {source} does not exist.", status="warning")
-        print(f"Source file {source} does not exist.")
         return False
     result = subprocess.run(["multipass", "transfer", source, f"{name}:{destination}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'File transferred to instance {name}: {source} -> {destination}')
     return result.returncode == 0
 
 
@@ -69,9 +73,11 @@ def get_file(name, source, destination):
         >>> get_file("nonexistent_instance", "/home/ubuntu/file.txt", "file.txt")
         False
     """
+    log.info(f'Transferring file from instance {name}: {source} -> {destination}')
     result = subprocess.run(["multipass", "transfer", f"{name}:{source}", destination], capture_output=True, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'File transferred from instance {name}: {source} -> {destination}')
     return result.returncode == 0
 
 
@@ -95,9 +101,11 @@ def mount(name, source, destination):
         >>> mount("instance_name", "/nonexistent/directory", "/mnt/directory")
         False
     """
+    log.info(f'Mounting directory to instance {name}: {source} -> {destination}')
     result = subprocess.run(["multipass", "mount", source, f"{name}:{destination}"], capture_output=True, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'Directory mounted to instance {name}: {source} -> {destination}')
     return result.returncode == 0
 
 
@@ -116,7 +124,9 @@ def unmount(name):
         >>> unmount("instance_name")
         True
     """
+    log.info(f'Unmounting directory from instance {name}')
     result = subprocess.run(["multipass", "unmount", name], capture_output=True, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'Directory unmounted from instance {name}')
     return result.returncode == 0

@@ -6,12 +6,15 @@
 ## @julesreyn
 ##
 
-from lib import *
+from taker_lib import *
+import logging
+import datetime
 
 DEFAULT_INSTANCE_IMAGE = "22.04" # available options: 20.04, 22.04, 23.10, daily:24.04, docker, jellyfin, core, core18, core20, core22  -> search new image with "multipass find"
 DEFAULT_INSTANCE_VCPUS = "1" # available options: 1, 2, 4, 6
 DEFAULT_INSTANCE_MEMORY = "2G" # available options: 512M, 1G, 2G, 4G, 8G
 
+log = logging.getLogger(__name__)
 
 
 def upload_config(name):
@@ -77,4 +80,8 @@ def init_instance(image=DEFAULT_INSTANCE_IMAGE, cpu=DEFAULT_INSTANCE_VCPUS, memo
 
 
 if __name__ == "__main__":
+    logging.basicConfig(filename=f"logs/instances/init-vm-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log",
+                        level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
+    log.info("Starting instance initialization")
     init_instance()

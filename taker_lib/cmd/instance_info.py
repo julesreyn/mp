@@ -6,8 +6,11 @@
 ## @julesreyn
 ##
 
-from lib.taker_logger import logger
+from taker_lib.logger import logger
 import subprocess
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def get_ip(name):
@@ -24,12 +27,16 @@ def get_ip(name):
         >>> get_ip("instance_name")
         192.168.0.1
     """
+    log.info(f'Getting IP address of instance {name}')
     result = subprocess.run(["multipass", "info", name], capture_output=True, text=True, check=True)
+
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     for line in result.stdout.split('\n'):
         if 'IPv4' in line:
-            return line.split()[1]
+            ipv4 = line.split()[1]
+            log.info(f'Instance {name} has IP address {ipv4}')
+            return ipv4
     return None
 
 
@@ -51,12 +58,15 @@ def get_state(name):
         >>> get_state("stopped_instance")
         Stopped
     """
+    log.info(f'Getting state of instance {name}')
     result = subprocess.run(["multipass", "info", name], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     for line in result.stdout.split('\n'):
         if 'State' in line:
-            return line.split()[1]
+            state = line.split()[1]
+            log.info(f'Instance {name} is {state}')
+            return state
     return None
 
 
@@ -75,12 +85,15 @@ def get_image(name):
         >>> get_image("instance_name")
         22.04
     """
+    log.info(f'Getting image of instance {name}')
     result = subprocess.run(["multipass", "info", name], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     for line in result.stdout.split('\n'):
         if 'Image' in line:
-            return line.split()[1]
+            image = line.split()[1]
+            log.info(f'Instance {name} is using image {image}')
+            return image
     return None
 
 
@@ -101,12 +114,15 @@ def get_cpu_usage(name):
         >>> get_cpu_usage("instance_name")
         0.0
     """
+    log.info(f'Getting CPU usage of instance {name}')
     result = subprocess.run(["multipass", "exec", name, "--", "mpstat", "1", "1"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     for line in result.stdout.split('\n'):
         if 'all' in line:
-            return line.split()[2]
+            cpu_usage = line.split()[-1]
+            log.info(f'Instance {name} has CPU usage {cpu_usage}')
+            return cpu_usage
     return None
 
 
@@ -127,12 +143,15 @@ def get_memory_usage(name):
         >>> get_memory_usage("instance_name")
         0
     """
+    log.info(f'Getting memory usage of instance {name}')
     result = subprocess.run(["multipass", "exec", name, "--", "free", "-m"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     for line in result.stdout.split('\n'):
         if 'Mem' in line:
-            return line.split()[2]
+            mem = line.split()[2]
+            log.info(f'Instance {name} has memory usage {mem}')
+            return mem
     return None
 
 
@@ -153,12 +172,15 @@ def get_disk_usage(name):
         >>> get_disk_usage("instance_name")
         0.4
     """
+    log.info(f'Getting disk usage of instance {name}')
     result = subprocess.run(["multipass", "exec", name, "--", "df", "-h"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     for line in result.stdout.split('\n'):
         if '/dev/root' in line:
-            return line.split()[2]
+            disk = line.split()[2]
+            log.info(f'Instance {name} has disk usage {disk}')
+            return disk
     return None
 
 
@@ -179,9 +201,11 @@ def get_uptime(name):
         >>> get_uptime("instance_name")
         1:23:45
     """
+    log.info(f'Getting uptime of instance {name}')
     result = subprocess.run(["multipass", "exec", name, "--", "uptime"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'Instance {name} has uptime {result.stdout.split()[2]}')
     return result.stdout.split(',')[0]
 
 
@@ -201,9 +225,11 @@ def get_processes(name):
         >>> get_processes("instance_name")
         10
     """
+    log.info(f'Getting number of processes on instance {name}')
     result = subprocess.run(["multipass", "exec", name, "--", "ps", "aux"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'Instance {name} has {len(result.stdout.split()) - 1} processes')
     return len(result.stdout.split('\n')) - 1
 
 
@@ -223,9 +249,11 @@ def get_nb_users(name):
         >>> get_nb_users("instance_name")
         1
     """
+    log.info(f'Getting number of users on instance {name}')
     result = subprocess.run(["multipass", "exec", name, "--", "who"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'Instance {name} has {len(result.stdout.split()) - 1} users')
     return len(result.stdout.split('\n')) - 1
 
 
@@ -244,9 +272,11 @@ def get_hostname(name):
         >>> get_hostname("instance_name")
         "instance_hostname"
     """
+    log.info(f'Getting hostname of instance {name}')
     result = subprocess.run(["multipass", "exec", name, "--", "hostname"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'Instance {name} has hostname {result.stdout.strip()}')
     return result.stdout.strip()
 
 
@@ -262,10 +292,13 @@ def get_running_instances():
         >>> get_running_instances()
         ["instance1", "instance2"]
     """
+    log.info('Getting running instances')
     result = subprocess.run(["multipass", "list"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance="get_running_instances", error=result.stderr)
-    return [line.split()[0] for line in result.stdout.split('\n') if "Running" in line]
+    lines = result.stdout.split("\n")
+    log.info(f'Running instances: [{", ".join([line.split()[0] for line in lines if "Running" in line])}]')
+    return [line.split()[0] for line in lines if "Running" in line]
 
 
 
@@ -280,10 +313,13 @@ def get_stopped_instances():
         >>> get_stopped_instances()
         ["instance3", "instance4"]
     """
+    log.info('Getting stopped instances')
     result = subprocess.run(["multipass", "list"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance="get_running_instances", error=result.stderr)
-    return [line.split()[0] for line in result.stdout.split('\n') if "Stopped" in line]
+    lines = result.stdout.split("\n")
+    log.info(f'Stopped instances: [{", ".join([line.split()[0] for line in lines if "Stopped" in line])}]')
+    return [line.split()[0] for line in lines if "Stopped" in line]
 
 
 
@@ -298,8 +334,10 @@ def get_all_instances():
         >>> get_all_instances()
         ["instance1", "instance2", "instance3", "instance4"]
     """
+    log.info('Getting all instances')
     running_instances = get_running_instances()
     stopped_instances = get_stopped_instances()
+    log.info(f'All instances: {running_instances + stopped_instances}')
     return running_instances + stopped_instances
 
 
@@ -325,7 +363,9 @@ def get_instance_info(name):
         Disk usage:     1.1G out of 4.7G
         Memory usage:   91.5M out of 985.4M"
     """
+    log.info(f'Getting information about instance {name}')
     result = subprocess.run(["multipass", "info", name], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
+    log.info(f'Information about instance {name}:\n{result.stdout}')
     return result.stdout

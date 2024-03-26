@@ -1,2 +1,5 @@
 __pycache__/*
 .env
+logs/instances/*.log
+taker_lib/cmd/__pycache__/*
+taker_lib/__pycache__/*

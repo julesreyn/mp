@@ -6,10 +6,13 @@
 ## @julesreyn
 ##
 
-from lib.taker_logger import logger
+from taker_lib.logger import logger
 import subprocess
 import secrets
 import string
+import logging
+
+log = logging.getLogger(__name__)
 
 
 
@@ -24,7 +27,9 @@ def instance_name_gen():
         >>> instance_name_gen()
         'xzvyan'
     """
-    return ''.join(secrets.choice(string.ascii_lowercase) for _ in range(6))
+    instances_name = ''.join(secrets.choice(string.ascii_lowercase) for _ in range(6))
+    log.info(f'Generated instance name: {instances_name}')
+    return instances_name
 
 
 
@@ -45,6 +50,7 @@ def exec_command(name, command):
         >>> exec_command("instance_name", "ls /nonexistent")
         False
     """
+    log.info(f'Executing command on instance {name}: {command}')
     command_list = command.split()
     process = subprocess.run(["multipass", "exec", name, "--"] + command_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if process.returncode != 0:
@@ -63,6 +69,7 @@ def run_shell(name):
     Example:
         >>> run_shell("instance_name")
     """
+    log.info(f'Opening shell on instance {name}')
     subprocess.run(["multipass", "shell", name], check=True)
 
 
@@ -84,7 +91,8 @@ def launch_instance(name="default_name", image="22.04", cpus="1", memory="2G"):
         >>> launch_instance("instance_name", "22.04", "1", "2G")
         True
     """
-    result = subprocess.run(["multipass", "launch", "--name", name, "--cpus", cpus, "--memory", memory, image], text=True)
+    log.info(f'Launching instance {name} with image {image}, {cpus} CPUs, and {memory} memory')
+    result = subprocess.run(["multipass", "launch", "--name", name, "--cpus", cpus, "--memory", memory, image], capture_output=True, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
     return result.returncode == 0
@@ -105,6 +113,7 @@ def stop_instance(name):
         >>> stop_instance("instance_name")
         True
     """
+    log.info(f'Stopping instance {name}')
     result = subprocess.run(["multipass", "stop", name], capture_output=True, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
@@ -126,6 +135,7 @@ def start_instance(name):
         >>> start_instance("instance_name")
         True
     """
+    log.info(f'Starting instance {name}')
     result = subprocess.run(["multipass", "start", name], capture_output=True, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
@@ -147,6 +157,7 @@ def delete_instance(name):
         >>> delete_instance("instance_name")
         True
     """
+    log.info(f'Deleting instance {name}')
     result = subprocess.run(["multipass", "delete", name, "--purge"], capture_output=True, text=True)
     if result.returncode != 0:
         logger(instance=name, error=result.stderr)
@@ -165,6 +176,7 @@ def delete_all_instances():
         >>> delete_all_instances()
         True
     """
+    log.info('Deleting all instances')
     result = subprocess.run(["multipass", "delete", "--all", "--purge"], capture_output=True, text=True)
     if result.returncode != 0:
         logger(instance="Delete All Instances", error=result.stderr)
@@ -183,6 +195,7 @@ def list_instances():
         >>> list_instances()
         ['instance1', 'instance2', 'instance3']
     """
+    log.info('Listing all instances')
     result = subprocess.run(["multipass", "list"], capture_output=True, text=True, check=True)
     if result.returncode != 0:
         logger(instance="List Instances", error=result.stderr)
@@ -201,6 +214,7 @@ def stop_all_instances():
         >>> stop_all_instances()
         True
     """
+    log.info('Stopping all instances')
     instances = list_instances()
     for instance in instances:
         stop_instance(instance)
@@ -219,6 +233,7 @@ def start_all_instances():
         >>> start_all_instances()
         True
     """
+    log.info('Starting all instances')
     instances = list_instances()
     for instance in instances:
         start_instance(instance)
@@ -237,6 +252,7 @@ def delete_stopped_instances():
         >>> delete_stopped_instances()
         True
     """
+    log.info('Deleting all stopped instances')
     instances = list_instances()
     for instance in instances:
         if "Stopped" in subprocess.run(["multipass", "info", instance], capture_output=True, text=True).stdout:

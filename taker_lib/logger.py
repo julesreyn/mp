@@ -11,6 +11,9 @@ import json
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+import logging
+
+log = logging.getLogger(__name__)
 
 
 load_dotenv()
@@ -30,6 +33,7 @@ def logger(description=desc_exemple, status="error", instance="N/A", error=error
         error (str): The error message to display in a code block.
     """
     color = {
+        'critical': 16711680,  # Red
         'error': 16711680,  # Red
         'warning': 16776960,  # Yellow
         'info': 8421504  # Grey
@@ -40,7 +44,7 @@ def logger(description=desc_exemple, status="error", instance="N/A", error=error
 
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     description += f'\nError occurred at **{current_time}** UTC on instance **{instance}**'
-
+    getattr(log, status)(f'{error} - {instance}')
     data = {
         "embeds": [{
             "title": f"{error} - {instance}",
@@ -50,6 +54,6 @@ def logger(description=desc_exemple, status="error", instance="N/A", error=error
     }
 
     response = requests.post(os.getenv('WEBHOOK_URL'), data=json.dumps(data), headers={"Content-Type": "application/json"})
-
+    log.info(f'Sent message to Discord with status code {response.status_code}')
     if response.status_code != 204:
         raise ValueError(f'Request to Discord returned an error {response.status_code}, the response is:\n{response.text}')
