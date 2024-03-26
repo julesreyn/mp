@@ -223,3 +223,22 @@ def start_all_instances():
     for instance in instances:
         start_instance(instance)
     return True
+
+
+
+def delete_stopped_instances():
+    """
+    Delete all stopped instances.
+
+    Returns:
+        bool: True if all stopped instances were deleted successfully, False otherwise.
+
+    Example:
+        >>> delete_stopped_instances()
+        True
+    """
+    instances = list_instances()
+    for instance in instances:
+        if "Stopped" in subprocess.run(["multipass", "info", instance], capture_output=True, text=True).stdout:
+            delete_instance(instance)
+    return True
