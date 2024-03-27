@@ -17,6 +17,5 @@ if __name__ == "__main__":
                         level=logging.INFO,
                         format='%(asctime)s - %(levelname)s - %(message)s')
     log.info("Checking for server prerequisites")
-    check_serv
     log.info("Starting instance initialization")
     init_instance()
