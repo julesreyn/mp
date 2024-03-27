@@ -57,7 +57,7 @@ def install_prerequisites(name):
     log.info(f'Installing prerequisites on instance {name}')
     upload_config(name)
     log.info(f'Adding execution permissions to config.sh on instance {name}')
-    exec_command(name, "chmod +x /ome/ubuntu/config.sh")
+    exec_command(name, "chmod +x /home/ubuntu/config.sh")
     log.info(f'Executing config.sh on instance {name}')
     exec_command(name, "bash /home/ubuntu/config.sh")
     log.info(f'Removing config.sh from instance {name}')
