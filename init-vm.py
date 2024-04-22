@@ -16,6 +16,4 @@ if __name__ == "__main__":
     logging.basicConfig(filename=f"logs/instances/init-vm-{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log",
                         level=logging.INFO,
                         format='%(asctime)s - %(levelname)s - %(message)s')
-    log.info("Checking for server prerequisites")
-    log.info("Starting instance initialization")
     init_instance()
