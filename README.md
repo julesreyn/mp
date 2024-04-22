@@ -1,6 +1,6 @@
-# Conseil Junior Taker - 2024
+# Multipass Instance Manager - Python 3
 
-This project provides a library for managing Ubuntu instances using Multipass.
+This project provides a library for managing Linux instances using Multipass.
 
 ## Features
 
@@ -44,4 +44,14 @@ The application logs its activity to a file in the logs/instances directory. The
 The logs are also sended to Sysadmin's discord channel with the logger function.
 This function can report multiple levels of logs: INFO, WARNING, ERROR, CRITICAL.
 
-All logs are sended to the discord channel, but only the WARNING, ERROR and CRITICAL logs are sended to the sysadmin's discord channel.
+All logs are saved, but only the WARNING, ERROR and CRITICAL logs are sended to the sysadmin's discord channel.
+You can find in the discord embed message :
+
+- The log level
+- The log message
+- The log timestamp
+- Instance name
+
+## Contributing
+
+If you want to contribute to this project, you can fork the repository and submit a pull request with your changes. Please make sure to follow the coding standards and write tests for your code.
