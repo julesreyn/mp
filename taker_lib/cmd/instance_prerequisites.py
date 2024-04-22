@@ -82,6 +82,7 @@ def init_instance(image=DEFAULT_INSTANCE_IMAGE, cpu=DEFAULT_INSTANCE_VCPUS, memo
         >>> init_instance()
             "instance_name"
     """
+    log.info("Starting instance initialization")
     name = instance_name_gen()
     launch_instance(name, image, cpu, memory)
     if config:
