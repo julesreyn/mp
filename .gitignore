@@ -4,3 +4,5 @@ logs/instances/*.log
 taker_lib/cmd/__pycache__/*
 taker_lib/__pycache__/*
 discord_bot.py
+port_status.db
+port_status
