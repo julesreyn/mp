@@ -1,12 +1,12 @@
 ##
-## Conseil Junior Taker - 2024
+## Multipass Library - 2024
 ## mp [Ubuntu:22.04]
 ## File description:
-## taker instance library for taker file operations
+## multipass instance library for multipass file operations
 ## @julesreyn
 ##
 
-from taker_lib.logger import logger
+from mp.logger import logger
 import subprocess
 import os
 import logging

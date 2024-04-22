@@ -1,12 +1,12 @@
 ##
-## Conseil Junior Taker - 2024
+## Multipass Library - 2024
 ## mp [Ubuntu]
 ## File description:
 ## multipass library
 ## @julesreyn
 ##
 
-from taker_lib import *
+from mp import *
 import logging
 import datetime
 

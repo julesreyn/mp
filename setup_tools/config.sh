@@ -1,5 +1,5 @@
 #
-# Conseil Junior Taker - 2024
+# Multipass Library - 2024
 # mp [Ubuntu::22.04]
 # File description:
 # Virtual machine configuration script

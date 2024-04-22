@@ -1,14 +1,14 @@
 ##
-## Conseil Junior Taker - 2024
+## Multipass Library - 2024
 ## mp [Ubuntu:22.04]
 ## File description:
-## taker instance library for taker instance initialization
+## multipass instance library for multipass instance initialization
 ## @julesreyn
 ##
 
-from taker_lib.cmd.instance_operations import instance_name_gen, exec_command
-from taker_lib.cmd.instance_operations import launch_instance
-from taker_lib.cmd.file_operations import put_file
+from mp.cmd.instance_operations import instance_name_gen, exec_command
+from mp.cmd.instance_operations import launch_instance
+from mp.cmd.file_operations import put_file
 import subprocess
 import socket
 import logging
@@ -16,8 +16,8 @@ import logging
 log = logging.getLogger(__name__)
 
 DEFAULT_INSTANCE_IMAGE = "22.04" # available options: 20.04, 22.04, 23.10, daily:24.04, docker, jellyfin, core, core18, core20, core22  -> search new image with "multipass find"
-DEFAULT_INSTANCE_VCPUS = "1" # available options: 1, 2, 4, 6
-DEFAULT_INSTANCE_MEMORY = "2G" # available options: 512M, 1G, 2G, 4G, 8G
+DEFAULT_INSTANCE_VCPUS = "1" # available options: 1, 2, 4, 6, more..
+DEFAULT_INSTANCE_MEMORY = "2G" # available options: 512M, 1G, 2G, 4G, 8G, more..
 
 def upload_config(name):
     """
@@ -74,7 +74,7 @@ def init_instance(image=DEFAULT_INSTANCE_IMAGE, cpu=DEFAULT_INSTANCE_VCPUS, memo
         image (str): The image of the instance, default is "22.04"
         cpu (str): The number of CPUs, default is "1"
         memory (str): The amount of memory, default is "2G"
-        config (bool): Configures the instance with Taker requirements, default is True
+        config (bool): Configures the instance with multipass requirements, default is True
     Returns:
         str: The name of the instance
 
@@ -86,7 +86,7 @@ def init_instance(image=DEFAULT_INSTANCE_IMAGE, cpu=DEFAULT_INSTANCE_VCPUS, memo
     name = instance_name_gen()
     launch_instance(name, image, cpu, memory)
     if config:
-        log.info(f'Configuring instance {name} with Taker requirements')
+        log.info(f'Configuring instance {name} with multipass requirements')
         install_prerequisites(name)
     return name
 

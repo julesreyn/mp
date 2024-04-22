@@ -1,8 +1,8 @@
 ##
-## Conseil Junior Taker - 2024
+## Multipass Library - 2024
 ## mp [Ubuntu:22.04]
 ## File description:
-## taker expose command to expose services and ports
+## multipass expose command to expose services and ports
 ## @julesreyn
 ##
 

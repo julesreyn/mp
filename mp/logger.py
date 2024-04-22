@@ -1,8 +1,8 @@
 ##
-## Conseil Junior Taker - 2024
+## Multipass Library - 2024
 ## mp [Ubuntu:22.04]
 ## File description:
-## taker instance library for taker logging operations
+## multipass loggin system
 ## @julesreyn
 ##
 
@@ -15,9 +15,8 @@ import logging
 
 log = logging.getLogger(__name__)
 
-
 load_dotenv()
-desc_exemple = "An error occurred on a taker instance.\n Please check the logs for more information. \n\nFor more advanced information, check the error message below :\n"
+desc_exemple = "An error occurred on a Multipass instance.\n Please check the logs for more information. \n\nFor more advanced information, check the error message below :\n"
 error_exemple = "No error given. Please check the logs for more information."
 
 
